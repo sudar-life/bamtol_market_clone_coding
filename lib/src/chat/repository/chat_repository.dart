@@ -74,4 +74,19 @@ class ChatRepository extends GetxService {
     }
     return null;
   }
+
+  Future<List<ChatGroupModel>?> loadAllChatGroupModelWithMyUid(
+      String uid) async {
+    var doc = await db
+        .collection('chats')
+        .where('chatters', arrayContains: uid)
+        .get();
+
+    if (doc.docs.isNotEmpty) {
+      return doc.docs
+          .map<ChatGroupModel>((e) => ChatGroupModel.fromJson(e.data()))
+          .toList();
+    }
+    return null;
+  }
 }

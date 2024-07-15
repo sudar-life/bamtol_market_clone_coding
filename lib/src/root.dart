@@ -1,3 +1,4 @@
+import 'package:bamtol_market_app/src/chat/page/chat_list_page.dart';
 import 'package:bamtol_market_app/src/common/components/app_font.dart';
 import 'package:bamtol_market_app/src/common/controller/authentication_controller.dart';
 import 'package:bamtol_market_app/src/common/controller/bottom_nav_controller.dart';
@@ -19,7 +20,7 @@ class Root extends GetView<BottomNavController> {
             const HomePage(),
             const Center(child: AppFont('동네생활')),
             const Center(child: AppFont('내 근처')),
-            const Center(child: AppFont('채팅')),
+            const ChatListPage(),
             Center(
                 child: GestureDetector(
                     onTap: () {

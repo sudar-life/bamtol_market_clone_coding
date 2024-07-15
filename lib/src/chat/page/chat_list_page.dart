@@ -9,8 +9,24 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class ChatListPage extends StatelessWidget {
-  const ChatListPage({super.key});
+class ChatListPage extends StatefulWidget {
+  final bool useBackBtn;
+  const ChatListPage({super.key, this.useBackBtn = false});
+
+  @override
+  State<ChatListPage> createState() => _ChatListPageState();
+}
+
+class _ChatListPageState extends State<ChatListPage> {
+  @override
+  void initState() {
+    super.initState();
+    String? productId;
+    if (Get.arguments != null) {
+      productId = Get.arguments['productId'] as String?;
+    }
+    Get.find<ChatListController>().load(productId: productId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +36,15 @@ class ChatListPage extends StatelessWidget {
           '채팅',
           size: 20,
         ),
-        leading: GestureDetector(
-          onTap: Get.back,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: SvgPicture.asset('assets/svg/icons/back.svg'),
-          ),
-        ),
+        leading: widget.useBackBtn
+            ? GestureDetector(
+                onTap: Get.back,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: SvgPicture.asset('assets/svg/icons/back.svg'),
+                ),
+              )
+            : Container(),
       ),
       body: const ChatScrollWidget(),
     );

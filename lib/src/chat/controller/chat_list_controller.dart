@@ -24,12 +24,24 @@ class ChatListController extends GetxController {
   final RxList<Stream<List<ChatDisplayInfo>>> chatStreams =
       <Stream<List<ChatDisplayInfo>>>[].obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    var productId = Get.arguments['productId'] as String?;
-    if (productId != null) {
+  void load({String? productId}) {
+    chatStreams.clear();
+    if (productId == null) {
+      _loadMyAllChatList();
+    } else {
       _loadAllProductChatList(productId);
+    }
+  }
+
+  void _loadMyAllChatList() async {
+    var results = await _chatRepository.loadAllChatGroupModelWithMyUid(myUid);
+    if (results != null) {
+      chatStreams.clear();
+      results.forEach(
+        (result) {
+          loadChatInfoStream(result);
+        },
+      );
     }
   }
 

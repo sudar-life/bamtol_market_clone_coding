@@ -81,6 +81,15 @@ class MyApp extends StatelessWidget {
           user_repository,
         ));
         Get.put(CloudFirebaseRepository(FirebaseStorage.instance));
+        Get.lazyPut<ChatListController>(
+          () => ChatListController(
+            Get.find<ChatRepository>(),
+            Get.find<ProductRepository>(),
+            Get.find<UserRepository>(),
+            Get.find<AuthenticationController>().userModel.value.uid ?? '',
+          ),
+          fenix: true,
+        );
       }),
       getPages: [
         GetPage(name: '/', page: () => const App()),
@@ -150,15 +159,7 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
           name: '/chat-list',
-          page: () => const ChatListPage(),
-          binding: BindingsBuilder(() {
-            Get.put(ChatListController(
-              Get.find<ChatRepository>(),
-              Get.find<ProductRepository>(),
-              Get.find<UserRepository>(),
-              Get.find<AuthenticationController>().userModel.value.uid ?? '',
-            ));
-          }),
+          page: () => const ChatListPage(useBackBtn: true),
         ),
       ],
     );
