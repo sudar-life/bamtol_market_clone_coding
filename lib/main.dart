@@ -1,8 +1,12 @@
 import 'package:bamtol_market_app/firebase_options.dart';
 import 'package:bamtol_market_app/src/app.dart';
 import 'package:bamtol_market_app/src/common/controller/authentication_controller.dart';
+import 'package:bamtol_market_app/src/common/controller/common_layout_controller.dart';
 import 'package:bamtol_market_app/src/common/controller/data_load_controller.dart';
+import 'package:bamtol_market_app/src/common/repository/cloud_firebase_storage_repository.dart';
 import 'package:bamtol_market_app/src/home/page/home_page.dart';
+import 'package:bamtol_market_app/src/product/repository/product_repository.dart';
+import 'package:bamtol_market_app/src/product/write/controller/product_write_controller.dart';
 import 'package:bamtol_market_app/src/product/write/page/product_write_page.dart';
 import 'package:bamtol_market_app/src/root.dart';
 import 'package:bamtol_market_app/src/splash/controller/splash_controller.dart';
@@ -15,6 +19,7 @@ import 'package:bamtol_market_app/src/user/signup/page/signup_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,6 +62,8 @@ class MyApp extends StatelessWidget {
         var user_repository = UserRepository(db);
         Get.put(authenticationRepository);
         Get.put(user_repository);
+        Get.put(CommonLayoutController());
+        Get.put(ProductRepository(db));
         Get.put(BottomNavController());
         Get.put(SplashController());
         Get.put(DataLoadController());
@@ -64,6 +71,7 @@ class MyApp extends StatelessWidget {
           authenticationRepository,
           user_repository,
         ));
+        Get.put(CloudFirebaseRepository(FirebaseStorage.instance));
       }),
       getPages: [
         GetPage(name: '/', page: () => const App()),
@@ -90,6 +98,15 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/product/write',
           page: () => ProductWritePage(),
+          binding: BindingsBuilder(
+            () {
+              Get.put(ProductWriteController(
+                Get.find<AuthenticationController>().userModel.value,
+                Get.find<ProductRepository>(),
+                Get.find<CloudFirebaseRepository>(),
+              ));
+            },
+          ),
         ),
       ],
     );

@@ -5,10 +5,12 @@ class Btn extends StatelessWidget {
   final Function() onTap;
   final EdgeInsets padding;
   final Color color;
+  final bool disabled;
   const Btn({
     super.key,
     required this.child,
     required this.onTap,
+    this.disabled = false,
     this.color = const Color(0xffED7738),
     this.padding = const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
   });
@@ -16,12 +18,16 @@ class Btn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        if (!disabled) {
+          onTap();
+        }
+      },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(7),
         child: Container(
           padding: padding,
-          color: color,
+          color: disabled ? Colors.grey : color,
           child: child,
         ),
       ),
