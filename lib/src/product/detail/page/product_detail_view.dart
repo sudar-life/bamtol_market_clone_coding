@@ -1,3 +1,4 @@
+import 'package:bamtol_market_app/src/chat/model/chat_group_model.dart';
 import 'package:bamtol_market_app/src/common/components/app_font.dart';
 import 'package:bamtol_market_app/src/common/components/btn.dart';
 import 'package:bamtol_market_app/src/common/components/price_view.dart';
@@ -169,7 +170,9 @@ class ProductDetailView extends GetView<ProductDetailController> {
         child: Obx(
           () => _BottomNavWidget(
             product: controller.product.value,
+            isMine: controller.isMine,
             onLikedEvent: controller.onLikedEvent,
+            chatInfo: controller.chatInfo.value,
           ),
         ),
       ),
@@ -179,10 +182,14 @@ class ProductDetailView extends GetView<ProductDetailController> {
 
 class _BottomNavWidget extends StatelessWidget {
   final Function() onLikedEvent;
+  final bool isMine;
   final Product product;
+  final ChatGroupModel chatInfo;
   const _BottomNavWidget({
     super.key,
     required this.onLikedEvent,
+    required this.isMine,
+    required this.chatInfo,
     required this.product,
   });
 
@@ -238,13 +245,31 @@ class _BottomNavWidget extends StatelessWidget {
           ),
           const SizedBox(width: 15),
           Expanded(child: _price()),
-          Btn(
-            onTap: () {},
-            child: const AppFont(
-              '채팅하기',
-              fontWeight: FontWeight.bold,
+          if (!isMine)
+            Btn(
+              onTap: () {
+                Get.toNamed(
+                    '/chat/${product.docId}/${product.owner!.uid}/$uid');
+              },
+              child: const AppFont(
+                '채팅하기',
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
+          if (isMine)
+            Btn(
+              onTap: () {
+                if (chatInfo.chatters != null) {
+                  Get.toNamed('/chat-list', arguments: {
+                    'productId': product.docId,
+                  });
+                }
+              },
+              child: AppFont(
+                '채팅 ${chatInfo.chatCount}개',
+                fontWeight: FontWeight.bold,
+              ),
+            )
         ],
       ),
     );

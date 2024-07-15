@@ -1,3 +1,5 @@
+import 'package:bamtol_market_app/src/chat/model/chat_group_model.dart';
+import 'package:bamtol_market_app/src/chat/repository/chat_repository.dart';
 import 'package:bamtol_market_app/src/common/enum/market_enum.dart';
 import 'package:bamtol_market_app/src/common/model/product.dart';
 import 'package:bamtol_market_app/src/common/model/product_search_option.dart';
@@ -7,14 +9,17 @@ import 'package:get/get.dart';
 
 class ProductDetailController extends GetxController {
   final ProductRepository _productRepository;
+  final ChatRepository _chatRepository;
   final UserModel myUser;
   ProductDetailController(
     this._productRepository,
+    this._chatRepository,
     this.myUser,
   );
   late String docId;
   Rx<Product> product = const Product.empty().obs;
   RxList<Product> ownerOtherProducts = <Product>[].obs;
+  Rx<ChatGroupModel> chatInfo = const ChatGroupModel().obs;
 
   bool get isMine => myUser.uid == product.value.owner?.uid;
   bool isEdited = false;
@@ -25,6 +30,14 @@ class ProductDetailController extends GetxController {
     docId = Get.parameters['docId'] ?? '';
     await _loadProductDetailData();
     await _loadOtherProducts();
+    await _loadHowManyChatThisProduct();
+  }
+
+  Future<void> _loadHowManyChatThisProduct() async {
+    var result = await _chatRepository.loadAllChats(product.value.docId!);
+    if (result != null) {
+      chatInfo(result);
+    }
   }
 
   Future<void> _loadProductDetailData() async {

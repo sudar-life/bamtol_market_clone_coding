@@ -1,4 +1,5 @@
 import 'package:bamtol_market_app/src/common/components/app_font.dart';
+import 'package:bamtol_market_app/src/common/controller/authentication_controller.dart';
 import 'package:bamtol_market_app/src/common/controller/bottom_nav_controller.dart';
 import 'package:bamtol_market_app/src/home/page/home_page.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +15,17 @@ class Root extends GetView<BottomNavController> {
       body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           controller: controller.tabController,
-          children: const [
-            HomePage(),
-            Center(child: AppFont('동네생활')),
-            Center(child: AppFont('내 근처')),
-            Center(child: AppFont('채팅')),
-            Center(child: AppFont('나의 밤톨')),
+          children: [
+            const HomePage(),
+            const Center(child: AppFont('동네생활')),
+            const Center(child: AppFont('내 근처')),
+            const Center(child: AppFont('채팅')),
+            Center(
+                child: GestureDetector(
+                    onTap: () {
+                      Get.find<AuthenticationController>().logout();
+                    },
+                    child: AppFont('나의 밤톨'))),
           ]),
       bottomNavigationBar: Obx(
         () => BottomNavigationBar(

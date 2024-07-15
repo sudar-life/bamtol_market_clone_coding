@@ -1,5 +1,10 @@
 import 'package:bamtol_market_app/firebase_options.dart';
 import 'package:bamtol_market_app/src/app.dart';
+import 'package:bamtol_market_app/src/chat/controller/chat_controller.dart';
+import 'package:bamtol_market_app/src/chat/controller/chat_list_controller.dart';
+import 'package:bamtol_market_app/src/chat/page/chat_list_page.dart';
+import 'package:bamtol_market_app/src/chat/page/chat_page.dart';
+import 'package:bamtol_market_app/src/chat/repository/chat_repository.dart';
 import 'package:bamtol_market_app/src/common/controller/authentication_controller.dart';
 import 'package:bamtol_market_app/src/common/controller/common_layout_controller.dart';
 import 'package:bamtol_market_app/src/common/controller/data_load_controller.dart';
@@ -67,6 +72,7 @@ class MyApp extends StatelessWidget {
         Get.put(user_repository);
         Get.put(CommonLayoutController());
         Get.put(ProductRepository(db));
+        Get.put(ChatRepository(db));
         Get.put(BottomNavController());
         Get.put(SplashController());
         Get.put(DataLoadController());
@@ -123,10 +129,36 @@ class MyApp extends StatelessWidget {
             () {
               Get.put(ProductDetailController(
                 Get.find<ProductRepository>(),
+                Get.find<ChatRepository>(),
                 Get.find<AuthenticationController>().userModel.value,
               ));
             },
           ),
+        ),
+        GetPage(
+          name: '/chat/:docId/:ownerUid/:customerUid',
+          page: () => const ChatPage(),
+          binding: BindingsBuilder(
+            () {
+              Get.put(ChatController(
+                Get.find<ChatRepository>(),
+                Get.find<UserRepository>(),
+                Get.find<ProductRepository>(),
+              ));
+            },
+          ),
+        ),
+        GetPage(
+          name: '/chat-list',
+          page: () => const ChatListPage(),
+          binding: BindingsBuilder(() {
+            Get.put(ChatListController(
+              Get.find<ChatRepository>(),
+              Get.find<ProductRepository>(),
+              Get.find<UserRepository>(),
+              Get.find<AuthenticationController>().userModel.value.uid ?? '',
+            ));
+          }),
         ),
       ],
     );
