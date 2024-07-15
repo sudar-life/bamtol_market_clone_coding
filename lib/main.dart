@@ -3,6 +3,7 @@ import 'package:bamtol_market_app/src/app.dart';
 import 'package:bamtol_market_app/src/common/controller/authentication_controller.dart';
 import 'package:bamtol_market_app/src/common/controller/data_load_controller.dart';
 import 'package:bamtol_market_app/src/home/page/home_page.dart';
+import 'package:bamtol_market_app/src/product/write/page/product_write_page.dart';
 import 'package:bamtol_market_app/src/root.dart';
 import 'package:bamtol_market_app/src/splash/controller/splash_controller.dart';
 import 'package:bamtol_market_app/src/user/login/controller/login_controller.dart';
@@ -85,7 +86,11 @@ class MyApp extends StatelessWidget {
               );
             },
           ),
-        )
+        ),
+        GetPage(
+          name: '/product/write',
+          page: () => ProductWritePage(),
+        ),
       ],
     );
   }
