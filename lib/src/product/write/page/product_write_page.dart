@@ -6,7 +6,9 @@ import 'package:bamtol_market_app/src/common/components/textfield.dart';
 import 'package:bamtol_market_app/src/common/components/trade_location_map.dart';
 import 'package:bamtol_market_app/src/common/enum/market_enum.dart';
 import 'package:bamtol_market_app/src/common/layout/common_layout.dart';
+import 'package:bamtol_market_app/src/common/model/asset_value_entity.dart';
 import 'package:bamtol_market_app/src/product/write/controller/product_write_controller.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -198,15 +200,17 @@ class _ProductDescription extends GetView<ProductWriteController> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-      child: CommonTextField(
-        hintColor: Color(0xff6D7179),
-        hintText: '아라동에 올릴 게시글 내용을 작성해주세요.\n(판매 금지 물품은 게시가 제한될 수 있어요.)',
-        textInputType: TextInputType.multiline,
-        maxLines: 10,
-        onChange: controller.changeDescription,
-      ),
-    );
+        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+        child: Obx(
+          () => CommonTextField(
+            hintColor: Color(0xff6D7179),
+            hintText: '아라동에 올릴 게시글 내용을 작성해주세요.\n(판매 금지 물품은 게시가 제한될 수 있어요.)',
+            textInputType: TextInputType.multiline,
+            initText: controller.product.value.description,
+            maxLines: 10,
+            onChange: controller.changeDescription,
+          ),
+        ));
   }
 }
 
@@ -287,10 +291,13 @@ class _ProductTitleView extends GetView<ProductWriteController> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: CommonTextField(
-        hintText: '글 제목',
-        onChange: controller.changeTitle,
-        hintColor: const Color(0xff6D7179),
+      child: Obx(
+        () => CommonTextField(
+          hintText: '글 제목',
+          initText: controller.product.value.title,
+          onChange: controller.changeTitle,
+          hintColor: const Color(0xff6D7179),
+        ),
       ),
     );
   }
@@ -302,7 +309,7 @@ class _PhotoSelectedView extends GetView<ProductWriteController> {
   Widget _photoSelectIcon() {
     return GestureDetector(
       onTap: () async {
-        var selectedImages = await Get.to<List<AssetEntity>?>(
+        var selectedImages = await Get.to<List<AssetValueEntity>?>(
           MultifulImageView(
             initImages: controller.selectedImages,
           ),
@@ -361,19 +368,33 @@ class _PhotoSelectedView extends GetView<ProductWriteController> {
                     child: SizedBox(
                       width: 67,
                       height: 67,
-                      child: FutureBuilder(
-                        future: controller.selectedImages[index].file,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Image.file(
-                              snapshot.data!,
+                      child: controller.selectedImages[index].thumbnail != null
+                          ? CachedNetworkImage(
+                              imageUrl:
+                                  controller.selectedImages[index].thumbnail!,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => Center(
+                                      child: CircularProgressIndicator(
+                                value: downloadProgress.progress,
+                                strokeWidth: 1,
+                              )),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
                               fit: BoxFit.cover,
-                            );
-                          } else {
-                            return Container();
-                          }
-                        },
-                      ),
+                            )
+                          : FutureBuilder(
+                              future: controller.selectedImages[index].file,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Image.file(
+                                    snapshot.data!,
+                                    fit: BoxFit.cover,
+                                  );
+                                } else {
+                                  return Container();
+                                }
+                              },
+                            ),
                     ),
                   ),
                 ),

@@ -6,6 +6,8 @@ import 'package:bamtol_market_app/src/common/controller/data_load_controller.dar
 import 'package:bamtol_market_app/src/common/repository/cloud_firebase_storage_repository.dart';
 import 'package:bamtol_market_app/src/home/controller/home_controller.dart';
 import 'package:bamtol_market_app/src/home/page/home_page.dart';
+import 'package:bamtol_market_app/src/product/detail/controller/product_detail_controller.dart';
+import 'package:bamtol_market_app/src/product/detail/page/product_detail_view.dart';
 import 'package:bamtol_market_app/src/product/repository/product_repository.dart';
 import 'package:bamtol_market_app/src/product/write/controller/product_write_controller.dart';
 import 'package:bamtol_market_app/src/product/write/page/product_write_page.dart';
@@ -110,6 +112,18 @@ class MyApp extends StatelessWidget {
                 Get.find<AuthenticationController>().userModel.value,
                 Get.find<ProductRepository>(),
                 Get.find<CloudFirebaseRepository>(),
+              ));
+            },
+          ),
+        ),
+        GetPage(
+          name: '/product/detail/:docId',
+          page: () => ProductDetailView(),
+          binding: BindingsBuilder(
+            () {
+              Get.put(ProductDetailController(
+                Get.find<ProductRepository>(),
+                Get.find<AuthenticationController>().userModel.value,
               ));
             },
           ),
